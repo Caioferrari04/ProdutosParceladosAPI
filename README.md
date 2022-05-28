@@ -3,8 +3,8 @@
 API criada para realização de uma versão em .NET, C# do teste técnico de Back-End da Via Varejo.
 
 ## Dependências
-.NET Core 6.0
-Swagger 6.2
+- .NET Core 6.0
+- Swagger 6.2
 
 ## Utilização
 
