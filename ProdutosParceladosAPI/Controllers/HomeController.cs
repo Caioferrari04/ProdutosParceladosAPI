@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
+using ProdutosParceladosAPI.API;
+using ProdutosParceladosAPI.Models;
 using ProdutosParceladosAPI.Services;
 
 namespace ProdutosParceladosAPI.Controllers;
 
+[Route("/")]
 public class HomeController : Controller 
 {
     private readonly ParcelaServices _parcelaServices;
@@ -11,8 +14,9 @@ public class HomeController : Controller
         _parcelaServices = parcelaServices;
     }
 
-    public IActionResult Index() 
+    [HttpGet]
+    public IActionResult Index([FromBody]RequestModel request) 
     {
-        return Ok();
+        return Ok(_parcelaServices.GetListaParcelas(request.produto, request.condicaoPagamento));
     }
 }
