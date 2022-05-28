@@ -7,5 +7,5 @@ public class CondicaoPagamento : BaseModel
     [DisplayName("ValorEntrada")]
     public override double Valor { get => base.Valor; set => base.Valor = value; }
 
-    public double QtdeParcelas { get; set;}
+    public int QtdeParcelas { get; set;}
 }
