@@ -10,25 +10,36 @@ public class ParcelaServices
         ConcurrentBag<Parcela> parcelas = new ConcurrentBag<Parcela>();
         if (condicao.QtdeParcelas > 6)
         {
-            parcelas.Add(new Parcela { NumeroParcela = 1, Valor = condicao.Valor + condicao.Valor * 0.0115, TaxaJurosAoMes = 1.15 });
-            Parallel.For(2, (int)condicao.QtdeParcelas, Func =>
+            parcelas.Add(new Parcela { NumeroParcela = 1, Valor = condicao.Valor + produto.Valor * 0.0115 , TaxaJurosAoMes = 1.15 });
+
+            double valorFaltante = produto.Valor - condicao.Valor;
+            double valorDeParcela = produto.Valor / condicao.QtdeParcelas;
+            double valorResultante = produto.Valor - valorDeParcela == valorFaltante ? produto.Valor : produto.Valor - (condicao.Valor - valorDeParcela);
+            int qtdeParcelasReal = condicao.QtdeParcelas - 1;
+            valorDeParcela = valorDeParcela - ((condicao.Valor - valorDeParcela) / qtdeParcelasReal);
+
+            Parallel.For(1, condicao.QtdeParcelas, Func =>
             {
                 parcelas.Add(new Parcela
                 {
-                    NumeroParcela = Func,
-                    Valor = produto.Valor + (produto.Valor / condicao.QtdeParcelas) * 0.0115,
+                    NumeroParcela = Func + 1,
+                    Valor = valorDeParcela + valorResultante * 0.0115,
                     TaxaJurosAoMes = 1.15
                 });
             });
         }
         else
         {
-            Parallel.For(0, (int)condicao.QtdeParcelas, Func =>
+            Parallel.For(0, condicao.QtdeParcelas, Func =>
             {
+                double valorFaltante = produto.Valor - condicao.Valor;
+                double valorDeParcela = produto.Valor / condicao.QtdeParcelas;
+                double valorResultante = produto.Valor - valorDeParcela == valorFaltante ? produto.Valor : valorFaltante;
+
                 parcelas.Add(new Parcela
                 {
                     NumeroParcela = Func + 1,
-                    Valor = produto.Valor
+                    Valor = valorResultante / condicao.QtdeParcelas
                 });
             });
         }
