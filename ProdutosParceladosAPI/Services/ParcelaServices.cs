@@ -10,16 +10,20 @@ public class ParcelaServices
         ConcurrentBag<Parcela> parcelas = new ConcurrentBag<Parcela>();
 
         double valorResultante = produto.Valor - condicao.Valor;
-        double valorDeParcela = valorResultante / condicao.QtdeParcelas;
+        double valorParcela = valorResultante / condicao.QtdeParcelas;
         double taxaJuros = condicao.QtdeParcelas > 6 ? 0.0115 : 0;
+
+        valorParcela = valorResultante == 0 ? 1000 : valorParcela;
+        valorParcela = valorParcela + valorResultante * taxaJuros;
+        taxaJuros *= 100;
         
         Parallel.For(0, condicao.QtdeParcelas, Func =>
         {
             parcelas.Add(new Parcela
             {
                 NumeroParcela = Func + 1,
-                Valor = valorDeParcela + valorResultante * taxaJuros,
-                TaxaJurosAoMes = taxaJuros * 100
+                Valor = valorParcela,
+                TaxaJurosAoMes = taxaJuros
             });
         });
 
