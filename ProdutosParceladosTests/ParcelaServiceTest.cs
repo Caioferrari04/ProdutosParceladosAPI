@@ -28,7 +28,21 @@ public class ParcelaServiceTest
 
         var resultados = parcelaService.GetListaParcelas(produto, condicao);
 
-        Assert.True(resultados.All(t => t.Valor == produto.Valor/condicao.QtdeParcelas + produto.Valor * 0.0115));
+        Assert.True(resultados.All(t => t.Valor == produto.Valor / condicao.QtdeParcelas + produto.Valor * 0.0115));
+    }
+
+    [Fact]
+    public void ListaParcelasComValorEntrada()
+    {
+        var parcelaService = new ParcelaServices();
+        var produto = new Produto() { Codigo = 1, Nome = "Produto", Valor = 1000.00 };
+        var condicao = new CondicaoPagamento() { Valor = 200, QtdeParcelas = 10 };
+
+        var valorResultante = produto.Valor - condicao.Valor;
+
+        var resultados = parcelaService.GetListaParcelas(produto, condicao);
+
+        Assert.True(resultados.All(t => t.Valor == valorResultante / condicao.QtdeParcelas + valorResultante * 0.0115));
     }
 
     [Theory]
@@ -46,6 +60,6 @@ public class ParcelaServiceTest
 
         double taxaJuros = qtdeParcelas > 6 ? 0.0115 : 0;
 
-        Assert.True(resultados.All(t => t.Valor == produto.Valor/condicao.QtdeParcelas + produto.Valor * taxaJuros));
+        Assert.True(resultados.All(t => t.Valor == produto.Valor / condicao.QtdeParcelas + produto.Valor * taxaJuros));
     }
 }
