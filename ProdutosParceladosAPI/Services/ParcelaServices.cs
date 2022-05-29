@@ -11,29 +11,18 @@ public class ParcelaServices
 
         double valorResultante = produto.Valor - condicao.Valor;
         double valorDeParcela = valorResultante / condicao.QtdeParcelas;
-        if (condicao.QtdeParcelas > 6)
+        double taxaJuros = condicao.QtdeParcelas > 6 ? 0.0115 : 0;
+        
+        Parallel.For(0, condicao.QtdeParcelas, Func =>
         {
-            Parallel.For(0, condicao.QtdeParcelas, Func =>
+            parcelas.Add(new Parcela
             {
-                parcelas.Add(new Parcela
-                {
-                    NumeroParcela = Func + 1,
-                    Valor = valorDeParcela + valorResultante * 0.0115,
-                    TaxaJurosAoMes = 1.15
-                });
+                NumeroParcela = Func + 1,
+                Valor = valorDeParcela + valorResultante * taxaJuros,
+                TaxaJurosAoMes = taxaJuros * 100
             });
-        }
-        else
-        {
-            Parallel.For(0, condicao.QtdeParcelas, Func =>
-            {
-                parcelas.Add(new Parcela
-                {
-                    NumeroParcela = Func + 1,
-                    Valor = valorResultante / condicao.QtdeParcelas
-                });
-            });
-        }
+        });
+
         return parcelas;
     }
 }
