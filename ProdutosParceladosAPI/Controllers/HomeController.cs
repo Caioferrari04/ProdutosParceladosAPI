@@ -7,7 +7,7 @@ using ProdutosParceladosAPI.Validation;
 namespace ProdutosParceladosAPI.Controllers;
 
 [Route("/")]
-public class HomeController : Controller 
+public class HomeController : Controller
 {
     private readonly ParcelaServices _parcelaServices;
     public HomeController(ParcelaServices parcelaServices)
@@ -16,17 +16,18 @@ public class HomeController : Controller
     }
 
     [HttpGet]
-    public IActionResult Index([FromBody]RequestModel request) 
+    public IActionResult Index([FromBody] RequestModel request)
     {
-        var produto = request.produto;
-        var condicao = request.condicaoPagamento;
+        var requestValidator = new RequestValidator();
+        var result = requestValidator.Validate(request);
 
-        var produtoValidator = new ProdutoValidator();
-        var result = produtoValidator.Validate(produto);
-
-        if(result.IsValid)
-            return Ok(_parcelaServices.GetListaParcelas(produto, condicao));
-            
-        return BadRequest("Valor nao pode ser negativo");
+        if (result.IsValid)
+            return Ok(_parcelaServices.GetListaParcelas(request.produto, request.condicaoPagamento));
+        else
+        {
+            string response = "";
+            result.Errors.ForEach(p => response += p.ErrorMessage + "\n");
+            return BadRequest(response);
+        }
     }
 }
