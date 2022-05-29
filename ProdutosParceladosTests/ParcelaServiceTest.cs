@@ -1,24 +1,9 @@
-using System.Collections.Concurrent;
-using FakeItEasy;
 using ProdutosParceladosAPI.Models;
 using ProdutosParceladosAPI.Services;
 namespace ProdutosParceladosTests;
 
 public class ParcelaServiceTest
 {
-    Produto produtoTeste;
-    CondicaoPagamento condicaoTeste;
-    ConcurrentBag<Parcela> parcelasTeste;
-    public ParcelaServiceTest()
-    {
-        produtoTeste = new Produto() { Codigo = 1, Nome = "Teste", Valor = 1000.00 };
-        condicaoTeste = new CondicaoPagamento() { Valor = 500.00, QtdeParcelas = 2 };
-        parcelasTeste = new ConcurrentBag<Parcela>() {
-            new Parcela { NumeroParcela = 1, Valor = 500 },
-            new Parcela { NumeroParcela = 2, Valor = 500 }
-        };
-    }
-
     [Fact]
     public void ListaParcelasSemValorEntrada()
     {
@@ -50,7 +35,7 @@ public class ParcelaServiceTest
     [InlineData(1000.00, 10)]
     [InlineData(2000.00, 8)]
     [InlineData(2000.00, 20)]
-    public void ListarParcelasSemValorEntrada(int valorProduto, int qtdeParcelas)
+    public void ListarParcelasSemValorEntrada(double valorProduto, int qtdeParcelas)
     {
         var parcelaService = new ParcelaServices();
         var produto = new Produto { Codigo = 1, Nome = "Produto", Valor = valorProduto };
@@ -61,5 +46,25 @@ public class ParcelaServiceTest
         double taxaJuros = qtdeParcelas > 6 ? 0.0115 : 0;
 
         Assert.True(resultados.All(t => t.Valor == produto.Valor / condicao.QtdeParcelas + produto.Valor * taxaJuros));
+    }
+
+    [Theory]
+    [InlineData(1000, 200, 10)]
+    [InlineData(1000, 1000, 1)]
+    [InlineData(2000, 200, 20)]
+    [InlineData(2000, 1000, 2)]
+    public void ListarParcelasComValorEntrada(double valorProduto, double valorEntrada, int qtdeParcelas) 
+    {
+        var parcelaService = new ParcelaServices();
+        var produto = new Produto { Codigo = 1, Nome = "Produto", Valor = valorProduto };
+        var condicao = new CondicaoPagamento { Valor = 0, QtdeParcelas = qtdeParcelas };
+
+        var resultados = parcelaService.GetListaParcelas(produto, condicao);
+
+        var valorResultante = produto.Valor - condicao.Valor;
+
+        double taxaJuros = qtdeParcelas > 6 ? 0.0115 : 0;
+
+        Assert.True(resultados.All(t => t.Valor == valorResultante / condicao.QtdeParcelas + valorResultante * taxaJuros));
     }
 }
