@@ -20,7 +20,7 @@ public class ParcelaServiceTest
     }
 
     [Fact]
-    public void ListaParcelas()
+    public void ListaParcelasSemValorEntrada()
     {
         var parcelaService = new ParcelaServices();
         var produto = new Produto() { Codigo = 1, Nome = "Produto", Valor = 1000.00 };
@@ -36,7 +36,7 @@ public class ParcelaServiceTest
     [InlineData(1000.00, 10)]
     [InlineData(2000.00, 8)]
     [InlineData(2000.00, 20)]
-    public void ListarParcelas(int valorProduto, int qtdeParcelas)
+    public void ListarParcelasSemValorEntrada(int valorProduto, int qtdeParcelas)
     {
         var parcelaService = new ParcelaServices();
         var produto = new Produto { Codigo = 1, Nome = "Produto", Valor = valorProduto };
@@ -44,12 +44,8 @@ public class ParcelaServiceTest
 
         var resultados = parcelaService.GetListaParcelas(produto, condicao);
 
-        List<bool> isResultCorrect = new List<bool>();
         double taxaJuros = qtdeParcelas > 6 ? 0.0115 : 0;
 
-        foreach(var resultado in resultados)
-            isResultCorrect.Add(resultado.Valor == produto.Valor/qtdeParcelas + produto.Valor * taxaJuros); 
-
-        Assert.True(isResultCorrect.All(t => t));
+        Assert.True(resultados.All(t => t.Valor == produto.Valor/condicao.QtdeParcelas + produto.Valor * taxaJuros));
     }
 }
