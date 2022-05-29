@@ -22,8 +22,13 @@ public class ParcelaServiceTest
     [Fact]
     public void ListaParcelas()
     {
-        var parcelaService = A.Fake<ParcelaServices>();
-        A.CallTo(() => parcelaService.GetListaParcelas(produtoTeste, condicaoTeste)).Returns(parcelasTeste);
+        var parcelaService = new ParcelaServices();
+        var produto = new Produto() { Codigo = 1, Nome = "Produto", Valor = 1000.00 };
+        var condicao = new CondicaoPagamento() { Valor = 0, QtdeParcelas = 10 };
+
+        var resultados = parcelaService.GetListaParcelas(produto, condicao);
+
+        Assert.True(resultados.All(t => t.Valor == produto.Valor/condicao.QtdeParcelas + produto.Valor * 0.0115));
     }
 
     [Theory]
