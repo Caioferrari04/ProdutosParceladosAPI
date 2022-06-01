@@ -15,7 +15,7 @@ API criada para realização de uma versão em .NET, C# do teste técnico de Bac
 
 - Execute o comando `dotnet restore` para restaurar as dependências do projeto.
 
-- Por fim, utilize `dotnet run` para inicializar a API no IIS, e a acesse na rota local `https://localhost:7005` por requisição GET.
+- Por fim, utilize `dotnet run` para inicializar a API no IIS, e a acesse na rota local `https://localhost:7005/swagger`, e `https://localhost:7005/` para realizar requisições do tipo GET.
 
 ### Corpo de requisição
 

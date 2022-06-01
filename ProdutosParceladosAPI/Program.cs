@@ -1,3 +1,4 @@
+using Microsoft.OpenApi.Models;
 using ProdutosParceladosAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,7 +10,21 @@ builder.Services.AddControllers();
 
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", 
+                    new OpenApiInfo { 
+                        Title = "ProdutosParceladosAPI", 
+                        Version = "v1",
+                        Description = "Teste de back-end da Via Varejo",
+                        Contact = new OpenApiContact
+                        {
+                            Name = "Caio Silva Ferrari",
+                            Email = "caioferrari0484@gmail.com",
+                            Url = new Uri("https://github.com/Caioferrari04")
+                        }
+                    });
+            });
 
 builder.Services.AddScoped<ParcelaServices>();
 
