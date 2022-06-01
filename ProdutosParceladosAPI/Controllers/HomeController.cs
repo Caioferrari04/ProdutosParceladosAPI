@@ -16,13 +16,13 @@ public class HomeController : Controller
     }
 
     [HttpGet]
-    public IActionResult Index([FromBody] RequestModel request)
+    public async Task<IActionResult> Index([FromBody] Request request)
     {
         var requestValidator = new RequestValidator();
         var result = requestValidator.Validate(request);
 
         if (result.IsValid)
-            return Ok(_parcelaServices.GetListaParcelas(request.produto, request.condicaoPagamento));
+            return Ok(await _parcelaServices.GetListaParcelas(request.produto, request.condicaoPagamento));
         else
         {
             string response = "";

@@ -3,7 +3,7 @@ using ProdutosParceladosAPI.API;
 
 namespace ProdutosParceladosAPI.Validation;
 
-public class RequestValidator : AbstractValidator<RequestModel>
+public class RequestValidator : AbstractValidator<Request>
 {
     public RequestValidator()
     {
