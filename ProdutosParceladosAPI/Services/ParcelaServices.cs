@@ -8,9 +8,9 @@ namespace ProdutosParceladosAPI.Services;
 
 public class ParcelaServices
 {
-    public virtual async Task<ConcurrentBag<Parcela>> GetListaParcelas(Produto produto, CondicaoPagamento condicao)
+    public virtual async Task<Parcela[]> GetListaParcelas(Produto produto, CondicaoPagamento condicao)
     {
-        ConcurrentBag<Parcela> parcelas = new ConcurrentBag<Parcela>();
+        Parcela[] parcelas = new Parcela[condicao.QtdeParcelas];
 
         var resultado = await _getValorSelic();
 
@@ -19,20 +19,25 @@ public class ParcelaServices
         double valorResultante = produto.Valor - condicao.Valor;
         double valorParcela = valorResultante / condicao.QtdeParcelas;
 
-        valorParcela = valorResultante == 0 ? 1000 : valorParcela;
+        valorParcela = valorResultante is 0 ? produto.Valor : valorParcela;
         valorParcela = Math.Round(valorParcela + valorResultante * taxaJuros, 2);
 
-        taxaJuros *= DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month);
-        
-        Parallel.For(0, condicao.QtdeParcelas, new ParallelOptions { MaxDegreeOfParallelism = 4 }, Func =>
+        var tempoAtual = DateTime.Now;
+
+        if (taxaJuros is not 0) {
+            taxaJuros *= DateTime.DaysInMonth(tempoAtual.Year, tempoAtual.Month);
+
+            taxaJuros = Math.Round(taxaJuros, 2);    
+        }
+
+        for (int i = 0; i < condicao.QtdeParcelas; i++)
         {
-            parcelas.Add(new Parcela
-            {
-                NumeroParcela = Func + 1,
-                Valor = valorParcela,
-                TaxaJurosAoMes = taxaJuros
-            });
-        });
+            parcelas[i] = new Parcela() {
+                NumeroParcela = i + 1,
+                TaxaJurosAoMes = taxaJuros,
+                Valor = valorParcela
+            };
+        }
 
         return parcelas;
     }
